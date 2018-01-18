@@ -45,9 +45,7 @@ if (cardsInPlay.length === 2) {
 var flipCard = function(){
 	var cardId = this.getAttribute("data-id");
 	var turned = this.getAttribute("src");
-	/*console.log ("User flipped " + cards[cardId].rank);
-	console.log ("User flipped " + cards[cardId].cardImage);
-	console.log ("User flipped " + cards[cardId].suit);*/
+	
 	if (turned === 'images/back.png'){
 		cardsInPlay.push(cards[cardId].rank);
 		this.setAttribute('src', cards[cardId].cardImage);
@@ -55,6 +53,18 @@ var flipCard = function(){
 	} //no action should be taken is card is already flipped over
 }
 
+var reShuffle = function(){  //reshuffle cards using Fischer Yates
+	for (var i = cards.length - 1 ; i >= 1 ; i--){
+		var j = Math.floor(Math.random()*i);  //take random j number between 0 and i
+		//swap cards[i] and cards[j]
+		var cardsClone = cards.slice(); //clone array cards
+    	var removedCard = cardsClone.splice(j,1); // remove 1 card at position j
+    	cardsClone.splice(i,0,removedCard[0]); //Add that card in position i
+    	var removedCard = cardsClone.splice(i-1,1); // remove 1 card at position i-1
+    	cardsClone.splice(j,0,removedCard[0]); //Add that card in position j
+ 		cards = cardsClone.slice();
+	}
+}
 
 var createBoard = function(){
 	var gameBoard = document.getElementById('game-board');
@@ -65,24 +75,26 @@ var createBoard = function(){
 		cardElement.setAttribute('data-id',i);
 		cardElement.setAttribute('alt',cards[i].rank + " of " + cards[i].suit);
 		cardElement.addEventListener('click',flipCard);
-
 		gameBoard.appendChild(cardElement);
-		
 	};
 }
 
 var resetGame = function(){
+	reShuffle();	
 	var images = document.getElementsByTagName('img');
 	for (var i = 0; i < cards.length; i++){
 		images[i].setAttribute('src','images/back.png');
 	}
 	cardsInPlay = [];
 	score=0;
-	document.querySelector('span').textContent=score;
+	document.querySelector('span').textContent = score;
 	document.querySelector('span').style.color = "black";
 }
 
 createBoard();
+
+
+
 
 
 
